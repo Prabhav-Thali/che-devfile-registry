@@ -87,7 +87,7 @@ jobs:
         if: ${{ success() }}
         run: echo "::set-output name=${{ matrix.arch }}::${{ github.event.inputs.version }}-${{ matrix.arch }}"
 
-create-manifest:
+  create-manifest:
     if: always()
     needs: nightly-build-publish
     runs-on: ubuntu-18.04
