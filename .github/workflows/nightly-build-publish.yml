@@ -80,7 +80,7 @@ jobs:
           context: .
           file: ./build/dockerfiles/Dockerfile
           platforms: linux/${{ matrix.arch }}
-          tags:  ${{ env.IMAGE }}:${{ steps.prep.outputs.version }},${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}
+          tags:  ${{ env.IMAGE }}:${{ steps.prep.outputs.version }}-${{ matrix.arch }},${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}-${{ matrix.arch }}
           push: true 
       -
         id: result
