@@ -26,7 +26,6 @@ jobs:
         uses: actions/checkout@v1
         with:
           fetch-depth: 1
-          ref: release
       - 
         name: Prepare
         id: prep
@@ -63,5 +62,18 @@ jobs:
       - 
         name: Build and push patched base images and happy path image
         run: |
+          git config --global user.name "Mykhailo Kuznietsov"
+          git config --global user.email "mkuznets@redhat.com"
+
           export GITHUB_TOKEN=${{ secrets.CHE_BOT_GITHUB_TOKEN }}
+
           ./make-release.sh --version ${{ github.event.inputs.version}} --trigger-release
+      - name: Create MM message
+        run: |
+          echo "{\"text\":\":building_construction: Che Devfile Registry ${{ github.event.inputs.version }} has been released: https://quay.io/eclipse/che-devfile-registry:${{ github.event.inputs.version }}\"}" > mattermost.json
+      - name: Send MM message
+        uses: mattermost/action-mattermost-notify@master
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: eclipse-che-releases
+          MATTERMOST_USERNAME: che-bot
