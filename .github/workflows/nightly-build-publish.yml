@@ -138,5 +138,5 @@ jobs:
             echo "[!] The job 'nightly-build-publish' didn't provide any outputs. Can't create the manifest list."
             exit 1;
           fi
-          docker manifest create ${{ env.IMAGE }}:${{ steps.prep.outputs.version }} $AMEND
-          docker manifest push ${{ env.IMAGE }}:${{ steps.prep.outputs.version }}
+          docker manifest create ${{ env.IMAGE }}:${{ needs['nightly-build-publish'].steps.prep.outputs.version }} $AMEND
+          docker manifest push ${{ env.IMAGE }}:${{ needs['nightly-build-publish'].steps.prep.outputs.version }}
