@@ -80,6 +80,17 @@ jobs:
         name: "Build result outputs version"
         if: ${{ success() }}
         run: echo "::set-output name=${{ matrix.arch }}::${{ steps.prep.outputs.version }}-${{ matrix.arch }}"
+  
+  build-images:
+    if: always()
+    needs: nightly-build-publish
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Build and push base images
+        run: /bin/bash arbitrary-users-patch/build_images.sh --push
+
+      - name: Build and push happy path image
+        run: /bin/bash arbitrary-users-patch/happy-path/build_happy_path_image.sh --push
 
   create-manifest:
     if: always()
@@ -93,13 +104,6 @@ jobs:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
-
-      - name: Build and push base images
-        run: /bin/bash arbitrary-users-patch/build_images.sh --push
-
-      - name: Build and push happy path image
-        run: /bin/bash arbitrary-users-patch/happy-path/build_happy_path_image.sh --push
-
       -  
         name: "Create and push manifest"
         run: |
