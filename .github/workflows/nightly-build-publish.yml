@@ -16,6 +16,7 @@ on:
 
 env:
   IMAGE: quay.io/prabhav/che-devfile-registry
+  VERSION: nightly
 
 jobs:
   nightly-build-publish:
@@ -43,7 +44,6 @@ jobs:
           # VERSION file contains 7.yy.0-SNAPSHOT but for nightlies we want just a nightly tag
           # VERSION=$(head -n 1 VERSION)
           # echo ::set-output name=version::${VERSION}
-          echo ::set-output name=version::nightly
           PLATFORMS=$(cat PLATFORMS)
           echo ::set-output name=platforms::${PLATFORMS}
       -
@@ -73,13 +73,13 @@ jobs:
           context: .
           file: ./build/dockerfiles/Dockerfile
           platforms: linux/${{ matrix.arch }}
-          tags:  ${{ env.IMAGE }}:${{ steps.prep.outputs.version }}-${{ matrix.arch }},${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}-${{ matrix.arch }}
+          tags:  ${{ env.IMAGE }}:${{ env.VERSION }}-${{ matrix.arch }},${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}-${{ matrix.arch }}
           push: true 
       -
         id: result
         name: "Build result outputs version"
         if: ${{ success() }}
-        run: echo "::set-output name=${{ matrix.arch }}::${{ steps.prep.outputs.version }}-${{ matrix.arch }}"
+        run: echo "::set-output name=${{ matrix.arch }}::${{ env.VERSION }}-${{ matrix.arch }}"
   
   build-images:
     if: always()
@@ -138,5 +138,5 @@ jobs:
             echo "[!] The job 'nightly-build-publish' didn't provide any outputs. Can't create the manifest list."
             exit 1;
           fi
-          docker manifest create ${{ env.IMAGE }}:${{ needs['nightly-build-publish'].steps.prep.outputs.version }} $AMEND
-          docker manifest push ${{ env.IMAGE }}:${{ needs['nightly-build-publish'].steps.prep.outputs.version }}
+          docker manifest create ${{ env.IMAGE }}:${{ env.VERSION }} $AMEND
+          docker manifest push ${{ env.IMAGE }}:${{ env.VERSION }}
