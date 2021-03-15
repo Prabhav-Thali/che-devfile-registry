@@ -11,7 +11,7 @@ REPO=git@github.com:eclipse/che-devfile-registry
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-t'|'--trigger-release') TRIGGER_RELEASE=1; NOCOMMIT=0; shift 0;;
+    '-t'|'--tag-release') TAG_RELEASE=1; NOCOMMIT=0; shift 0;;
     '-v'|'--version') VERSION="$2"; shift 1;;
     '-tmp'|'--use-tmp-dir') TMP=$(mktemp -d); shift 0;;
     '-n'|'--no-commit') NOCOMMIT=1; TRIGGER_RELEASE=0; shift 0;;
@@ -21,11 +21,11 @@ done
 
 usage ()
 {
-  echo "Usage: $0  --version [VERSION TO RELEASE] [--trigger-release]"
-  echo "Example: $0 --version 7.27.0 --trigger-release"; echo
+  echo "Usage: $0  --version [VERSION TO RELEASE] [--tag-release]"
+  echo "Example: $0 --version 7.27.0 --tag-release"; echo
 }
 
-performRelease() 
+buildAndPushImages() 
 {
   #Build and push patched base images and happy path image
   TAG=$(head -n 1 VERSION)
@@ -34,15 +34,15 @@ performRelease()
   /bin/bash arbitrary-users-patch/build_images.sh --push
 
   #Build and push images
-  SHORT_SHA1=$(git rev-parse --short HEAD)
-  VERSION=$(head -n 1 VERSION)
-  IMAGE=che-devfile-registry
-  DOCKERFILE_PATH=./build/dockerfiles/Dockerfile
-  docker buildx build --platform "$PLATFORMS" -t ${IMAGE} -f ${DOCKERFILE_PATH} --build-arg PATCHED_IMAGES_TAG="${VERSION}" --target registry .
-  docker tag ${IMAGE} "quay.io/eclipse/${IMAGE}:${SHORT_SHA1}"
-  docker push "quay.io/eclipse/${IMAGE}:${SHORT_SHA1}"
-  docker tag ${IMAGE} "quay.io/eclipse/${IMAGE}:${VERSION}"
-  docker push "quay.io/eclipse/${IMAGE}:${VERSION}"
+  # SHORT_SHA1=$(git rev-parse --short HEAD)
+  # VERSION=$(head -n 1 VERSION)
+  # IMAGE=che-devfile-registry
+  # DOCKERFILE_PATH=./build/dockerfiles/Dockerfile
+  # docker buildx build --platform "$PLATFORMS" -t ${IMAGE} -f ${DOCKERFILE_PATH} --build-arg PATCHED_IMAGES_TAG="${VERSION}" --target registry .
+  # docker tag ${IMAGE} "quay.io/eclipse/${IMAGE}:${SHORT_SHA1}"
+  # docker push "quay.io/eclipse/${IMAGE}:${SHORT_SHA1}"
+  # docker tag ${IMAGE} "quay.io/eclipse/${IMAGE}:${VERSION}"
+  # docker push "quay.io/eclipse/${IMAGE}:${VERSION}"
 }
 
 if [[ ! ${VERSION} ]]; then
@@ -95,7 +95,7 @@ if [[ $TRIGGER_RELEASE -eq 1 ]]; then
   # push new branch to release branch to trigger CI build
   git fetch origin "${BRANCH}:${BRANCH}"
   git checkout "${BRANCH}"
-  performRelease
+  buildAndPushImages
 
   # tag the release
   git checkout "${BRANCH}"
