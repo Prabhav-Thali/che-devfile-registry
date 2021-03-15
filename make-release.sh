@@ -141,9 +141,8 @@ if [[ ${NOCOMMIT} -eq 0 ]]; then
   fi 
 fi
 
-popd > /dev/null || exit
-
 # cleanup tmp dir
 if [[ $TMP ]] && [[ -d $TMP ]]; then
+  popd > /dev/null || exit
   rm -fr "$TMP"
 fi

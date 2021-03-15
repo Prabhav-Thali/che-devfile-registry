@@ -34,7 +34,7 @@ jobs:
         sudo pip install yq
         /bin/bash .ci/devfile-images-check.sh
 
-  nightly-build-publish:
+  build:
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
