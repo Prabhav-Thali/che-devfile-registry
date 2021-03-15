@@ -1,10 +1,10 @@
 #!/bin/bash
 # Release process automation script. 
 # Used to create branch/tag, update VERSION files 
-# and and trigger release by force pushing changes to the release branch 
+# and tag release
 
-# set to 1 to actually trigger changes in the release branch
-TRIGGER_RELEASE=0 
+# set to 1 to actually tag changes in the release branch
+TAG_RELEASE=0 
 NOCOMMIT=0
 TMP=""
 REPO=git@github.com:eclipse/che-devfile-registry
@@ -14,7 +14,7 @@ while [[ "$#" -gt 0 ]]; do
     '-t'|'--tag-release') TAG_RELEASE=1; NOCOMMIT=0; shift 0;;
     '-v'|'--version') VERSION="$2"; shift 1;;
     '-tmp'|'--use-tmp-dir') TMP=$(mktemp -d); shift 0;;
-    '-n'|'--no-commit') NOCOMMIT=1; TRIGGER_RELEASE=0; shift 0;;
+    '-n'|'--no-commit') NOCOMMIT=1; TAG_RELEASE=0; shift 0;;
   esac
   shift 1
 done
@@ -91,7 +91,7 @@ if [[ ${NOCOMMIT} -eq 0 ]]; then
   git push origin "${BRANCH}"
 fi
 
-if [[ $TRIGGER_RELEASE -eq 1 ]]; then
+if [[ $TAG_RELEASE -eq 1 ]]; then
   # push new branch to release branch to trigger CI build
   git fetch origin "${BRANCH}:${BRANCH}"
   git checkout "${BRANCH}"

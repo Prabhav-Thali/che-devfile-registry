@@ -141,7 +141,7 @@ jobs:
           ./make-release.sh --version ${{ github.event.inputs.version}} --tag-release
 
   send-MM-message:
-    needs: create-manifest
+    needs: tag-release
     runs-on: ubuntu-18.04
     steps:
       - name: Create MM message
