@@ -150,11 +150,6 @@ jobs:
           export GITHUB_TOKEN=${{ secrets.CHE_BOT_GITHUB_TOKEN }}
 
           ./make-release.sh --version ${{ github.event.inputs.version}} --tag-release
-
-  send-MM-message:
-    needs: tag-release
-    runs-on: ubuntu-18.04
-    steps:
       - name: Create MM message
         run: |
           echo "{\"text\":\":building_construction: Che Devfile Registry ${{ github.event.inputs.version }} has been released: https://quay.io/eclipse/che-devfile-registry:${{ github.event.inputs.version }}\"}" > mattermost.json
