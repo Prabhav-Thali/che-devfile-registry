@@ -141,6 +141,9 @@ jobs:
           ./make-release.sh --version ${{ github.event.inputs.version}} --tag-release
 
   send-MM-message:
+    needs: create-manifest
+    runs-on: ubuntu-18.04
+    steps:
       - name: Create MM message
         run: |
           echo "{\"text\":\":building_construction: Che Devfile Registry ${{ github.event.inputs.version }} has been released: https://quay.io/eclipse/che-devfile-registry:${{ github.event.inputs.version }}\"}" > mattermost.json
