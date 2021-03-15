@@ -18,12 +18,11 @@ on:
 
 env:
   IMAGE: quay.io/prabhav/che-devfile-registry
-  SHORT_SHA: $(git rev-parse --short HEAD)
 
 jobs:
   build-images:
     name: Create Che Devfile Registry Release
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -72,7 +71,7 @@ jobs:
 
   create-manifest:
     needs: build-images
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       -
         name: "Checkout  source code"
@@ -123,11 +122,13 @@ jobs:
 
   tag-release:
     needs: create-manifest
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       -
-        name: "Checkout Che Dashboard source code"
-        uses: actions/checkout@v2  
+        name: "Checkout  source code"
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1 
       -
         name: "Set up QEMU"
         uses: docker/setup-qemu-action@v1

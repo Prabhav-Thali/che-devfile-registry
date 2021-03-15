@@ -33,8 +33,10 @@ jobs:
       s390x: ${{ steps.result.outputs.s390x }}
     steps:
       -
-        name: "Checkout Che Dashboard source code"
-        uses: actions/checkout@v2
+        name: "Checkout  source code"
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
       -
         name: "Set up QEMU"
         uses: docker/setup-qemu-action@v1
@@ -66,11 +68,13 @@ jobs:
   create-manifest:
     if: always()
     needs: nightly-build-publish
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       -
-        name: "Checkout Che Dashboard source code"
-        uses: actions/checkout@v2
+        name: "Checkout  source code"
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
       - 
         name: Prepare
         id: prep
@@ -116,10 +120,13 @@ jobs:
   build-images:
     if: always()
     needs: nightly-build-publish
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - name: "Checkout Che Dashboard source code"
-        uses: actions/checkout@v2
+      - 
+        name: "Checkout  source code"
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
       -
         name: "Set up QEMU"
         uses: docker/setup-qemu-action@v1
