@@ -13,7 +13,7 @@ set -e
 SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
 
 DEFAULT_REGISTRY="quay.io"
-DEFAULT_ORGANIZATION="eclipse"
+DEFAULT_ORGANIZATION="prabhav"
 DEFAULT_TAG="nightly"
 
 REGISTRY=${REGISTRY:-${DEFAULT_REGISTRY}}
