@@ -114,8 +114,8 @@ jobs:
           fi
           docker manifest create ${{ env.IMAGE }}:${{ env.VERSION }} $AMEND
           docker manifest push ${{ env.IMAGE }}:${{ env.VERSION }}
-          docker tag ${{ env.IMAGE }}:${{ env.VERSION }} ${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}
-          docker push ${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}
+          docker manifest create ${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }} $AMEND
+          docker manifest push ${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}
 
   build-images:
     if: always()

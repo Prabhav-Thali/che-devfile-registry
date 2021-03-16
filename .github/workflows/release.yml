@@ -112,8 +112,8 @@ jobs:
           AMEND+=" --amend ${{ env.IMAGE }}:$S390X_VERSION";
           docker manifest create ${{ env.IMAGE }}:${{ github.event.inputs.version }} $AMEND
           docker manifest push ${{ env.IMAGE }}:${{ github.event.inputs.version }}
-          docker tag ${{ env.IMAGE }}:${{ github.event.inputs.version }} ${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}
-          docker push ${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}
+          docker manifest create ${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }} $AMEND
+          docker manifest push ${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}
       -
         id: result
         name: "Manifest result"
