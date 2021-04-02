@@ -21,7 +21,6 @@ env:
 jobs:
   nightly-build-publish:
     runs-on: ubuntu-latest
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -66,7 +65,6 @@ jobs:
         run: echo "::set-output name=${{ matrix.arch }}::${{ env.VERSION }}-${{ matrix.arch }}"
 
   create-manifest:
-    if: always()
     needs: nightly-build-publish
     runs-on: ubuntu-latest
     steps:
@@ -118,7 +116,6 @@ jobs:
           docker manifest push ${{ env.IMAGE }}:${{ steps.prep.outputs.short_sha1 }}
 
   build-images:
-    if: always()
     needs: nightly-build-publish
     runs-on: ubuntu-latest
     steps:
