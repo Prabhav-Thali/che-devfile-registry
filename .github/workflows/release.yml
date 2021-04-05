@@ -24,7 +24,7 @@ env:
   IMAGE: quay.io/prabhav/che-devfile-registry
 
 jobs:
-  build:
+  build-images:
     name: Create Che Devfile Registry Release
     runs-on: ubuntu-latest
     strategy:
