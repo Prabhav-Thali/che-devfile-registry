@@ -188,7 +188,7 @@ jobs:
       - 
         name: Build and push patched base images and happy path image
         run: |
-          git config --global user.name "Prabhav-Thali"
+          git config --global user.name "Prabhav Thali"
           git config --global user.email "Prabhav.Thali1@ibm.com"
 
           export GITHUB_TOKEN=${{ secrets.CHE_BOT_GITHUB_TOKEN }}
