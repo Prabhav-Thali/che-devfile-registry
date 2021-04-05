@@ -28,6 +28,7 @@ RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh devfiles; f
 RUN ./index.sh > /build/devfiles/index.json
 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
 RUN chmod -R g+rwX /build/devfiles
+RUN export ARCH="$(uname -m)" && if [[ ${ARCH} == "amd64" ]]; then expo ARCH="amd64"; fi
 
 FROM docker.io/httpd:2.4.43-alpine AS registry
 RUN apk add --no-cache bash && \
