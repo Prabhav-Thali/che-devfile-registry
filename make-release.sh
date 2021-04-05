@@ -1,7 +1,7 @@
 #!/bin/bash
 # Release process automation script. 
 # Used to create branch/tag, update VERSION files 
-# and tag release
+# and  tag release
 
 # set to 1 to actually tag changes in the release branch
 TAG_RELEASE=0 
