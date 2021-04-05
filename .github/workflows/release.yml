@@ -99,7 +99,7 @@ jobs:
         run: echo "::set-output name=${{ matrix.arch }}::${{ github.event.inputs.version }}-${{ matrix.arch }}"
   
   create-manifest:
-    needs: build
+    needs: build-images
     runs-on: ubuntu-latest
     steps:
       -
