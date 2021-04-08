@@ -20,7 +20,7 @@ env:
 
 jobs:
   nightly-build-publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -73,7 +73,7 @@ jobs:
 
   create-manifest:
     needs: nightly-build-publish
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       -
         name: "Checkout  source code"
@@ -126,7 +126,7 @@ jobs:
 
   build-images:
     needs: nightly-build-publish
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - 
         name: "Checkout  source code"
@@ -155,7 +155,16 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push base images
-        run: ./arbitrary-users-patch/build_images.sh --push
+        run: ./arbitrary-users-patch/build_images.sh --push --rm
 
       - name: Build and push happy path image
         run: ./arbitrary-users-patch/happy-path/build_happy_path_image.sh --push
+      -
+        name: "Build and push"
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./build/dockerfiles/Dockerfile
+          platforms: ${{ steps.package.outputs.content }}
+          tags:  quay.io/eclipse/${{ steps.prep.outputs.image }}:${{ steps.prep.outputs.version }},quay.io/eclipse/${{ steps.prep.outputs.image }}:${{ steps.prep.outputs.short_sha1 }}
+          push: true 

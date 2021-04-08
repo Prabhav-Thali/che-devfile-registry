@@ -26,7 +26,7 @@ env:
 jobs:
   build-images:
     name: Create Che Devfile Registry Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -100,7 +100,7 @@ jobs:
   
   create-manifest:
     needs: build-images
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       -
         name: "Checkout source code"
@@ -158,7 +158,7 @@ jobs:
 
   tag-release:
     needs: create-manifest
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       -
         name: "Checkout source code"
