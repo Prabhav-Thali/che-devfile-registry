@@ -1,5 +1,5 @@
 ARG TAG
-FROM quay.io/eclipse/che-java11-maven:${TAG}
+FROM quay.io/prabhav/che-java11-maven:${TAG}
 
 USER root
 
