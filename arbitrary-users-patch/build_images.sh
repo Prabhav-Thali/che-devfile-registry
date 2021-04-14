@@ -37,7 +37,7 @@ while read -r line; do
   dev_container_name=$(echo "$line" | tr -s ' ' | cut -f 1 -d ' ')
   base_image_name=$(echo "$line" | tr -s ' ' | cut -f 2 -d ' ')
   base_image_digest=$(echo "$line" | tr -s ' ' | cut -f 3 -d ' ')
-  present=skopeo inspect docker://"${base_image_digest}" --raw | grep manifests
+  present=$(skopeo inspect docker://"${base_image_digest}" --raw | grep manifests)
   if [ $present -eq 0 ]; then
     base_image_platforms_list=$(skopeo inspect docker://"${base_image_digest}" --raw | jq -r '.manifests[].platform.architecture')
     while IFS= read -r line ; do platforms_supported+=linux/$line, ; done <<< "$base_image_platforms_list"
