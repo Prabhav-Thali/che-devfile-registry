@@ -44,8 +44,6 @@ while read -r line; do
     echo "Inside If"
     base_image_platforms_list=$(skopeo inspect docker://"${base_image_digest}" --raw | jq -r '.manifests[].platform.architecture')
     echo $base_image_platforms_list
-    
-    echo $platforms_supported
     platforms_supported=""
     while IFS= read -r line ; do 
         if [[ "${supported_platforms[@]}" =~ " $line " ]]; then 
@@ -57,7 +55,6 @@ while read -r line; do
     echo "Inside else"
     platforms_supported=linux/amd64
   fi
-
   echo $platforms_supported
   echo "Building ${NAME_FORMAT}/${dev_container_name}:${TAG} based on $base_image_name ..."
   if ${PUSH_IMAGES}; then
