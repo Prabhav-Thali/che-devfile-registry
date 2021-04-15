@@ -52,7 +52,7 @@ while read -r line; do
             platforms_supported+=linux/$line, 
         fi 
     done <<< "$base_image_platforms_list"
-    platforms_supported=$(echo "$platforms_supported" | sed 's/\(.*\),/\1 /')
+    platforms_supported=$(echo "$platforms_supported" | sed 's/\(.*\),/\1/')
   else 
     echo "Inside else"
     platforms_supported=linux/amd64
