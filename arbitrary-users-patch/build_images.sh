@@ -40,13 +40,16 @@ while read -r line; do
   echo "${base_image_digest}"
   skopeo inspect docker://"${base_image_digest}" --raw | grep manifests
   if [[ -z $? ]]; then
+    echo "Inside If"
     base_image_platforms_list=$(skopeo inspect docker://"${base_image_digest}" --raw | jq -r '.manifests[].platform.architecture')
     while IFS= read -r line ; do platforms_supported+=linux/$line, ; done <<< "$base_image_platforms_list"
     platforms_supported=$(echo "$platforms_supported" | sed 's/\(.*\),/\1 /')
   else 
+    echo "Inside else"
     platforms_supported=linux/amd64
   fi
 
+  echo $platforms_supported
   echo "Building ${NAME_FORMAT}/${dev_container_name}:${TAG} based on $base_image_name ..."
   if ${PUSH_IMAGES}; then
     docker buildx build --platform "${platforms_supported}" -t "${NAME_FORMAT}/${dev_container_name}:${TAG}" --no-cache --push --build-arg FROM_IMAGE="$base_image_digest" "${SCRIPT_DIR}"/ | cat
