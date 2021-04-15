@@ -37,6 +37,7 @@ while read -r line; do
   dev_container_name=$(echo "$line" | tr -s ' ' | cut -f 1 -d ' ')
   base_image_name=$(echo "$line" | tr -s ' ' | cut -f 2 -d ' ')
   base_image_digest=$(echo "$line" | tr -s ' ' | cut -f 3 -d ' ')
+  skopeo --version
   echo "${base_image_digest}"
   skopeo inspect docker://"${base_image_digest}" --raw | grep manifests
   if [[ -z $? ]]; then
