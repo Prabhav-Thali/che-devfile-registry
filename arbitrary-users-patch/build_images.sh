@@ -45,7 +45,11 @@ while read -r line; do
     base_image_platforms_list=$(skopeo inspect docker://"${base_image_digest}" --raw | jq -r '.manifests[].platform.architecture')
     echo $base_image_platforms_list
     echo $platforms_supported
-    while IFS= read -r line ; do if [[ "${supported_platforms[@]}" =~ "$line" ]]; then platforms_supported+=linux/$line, fi; done <<< "$base_image_platforms_list"
+    while IFS= read -r line ; do 
+        if [[ "${supported_platforms[@]}" =~ "$line" ]]; then 
+            platforms_supported+=linux/$line, 
+        fi 
+    done <<< "$base_image_platforms_list"
     platforms_supported=$(echo "$platforms_supported" | sed 's/\(.*\),/\1 /')
   else 
     echo "Inside else"
