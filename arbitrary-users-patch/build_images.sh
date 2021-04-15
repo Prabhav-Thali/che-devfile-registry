@@ -39,7 +39,7 @@ while read -r line; do
   base_image_digest=$(echo "$line" | tr -s ' ' | cut -f 3 -d ' ')
   skopeo --version
   echo "${base_image_digest}"
-  raw_digest=skopeo inspect docker://"${base_image_digest}" --raw
+  raw_digest=$(skopeo inspect docker://"${base_image_digest}" --raw)
   present=$(echo "$raw_digest" | grep manifests)
   echo $present
   if [[ -z $present ]]; then
