@@ -38,11 +38,14 @@ while read -r line; do
   base_image_name=$(echo "$line" | tr -s ' ' | cut -f 2 -d ' ')
   base_image_digest=$(echo "$line" | tr -s ' ' | cut -f 3 -d ' ')
   skopeo --version
+  supported_platforms=("amd64" "arm64" "s390x" "ppc64le")
   echo "${base_image_digest}"
   if [[ $(skopeo inspect docker://"${base_image_digest}" --raw | grep manifests) ]]; then
     echo "Inside If"
     base_image_platforms_list=$(skopeo inspect docker://"${base_image_digest}" --raw | jq -r '.manifests[].platform.architecture')
-    while IFS= read -r line ; do platforms_supported+=linux/$line, ; done <<< "$base_image_platforms_list"
+    echo $base_image_platforms_list
+    echo $platforms_supported
+    while IFS= read -r line ; do if [[ "${supported_platforms[@]}" =~ "$line" ]]; then platforms_supported+=linux/$line, fi; done <<< "$base_image_platforms_list"
     platforms_supported=$(echo "$platforms_supported" | sed 's/\(.*\),/\1 /')
   else 
     echo "Inside else"
