@@ -39,7 +39,7 @@ while read -r line; do
   base_image_digest=$(echo "$line" | tr -s ' ' | cut -f 3 -d ' ')
   skopeo --version
   echo "${base_image_digest}"
-  if [[ skopeo inspect docker://"${base_image_digest}" --raw | grep manifests ]]; then
+  if [[ $(skopeo inspect docker://"${base_image_digest}" --raw | grep manifests) ]]; then
     echo "Inside If"
     base_image_platforms_list=$(skopeo inspect docker://"${base_image_digest}" --raw | jq -r '.manifests[].platform.architecture')
     while IFS= read -r line ; do platforms_supported+=linux/$line, ; done <<< "$base_image_platforms_list"
