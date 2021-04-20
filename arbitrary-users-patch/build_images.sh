@@ -60,10 +60,6 @@ while read -r line; do
     docker buildx build --platform "${platforms_supported}" -t "${NAME_FORMAT}/${dev_container_name}:${TAG}" --no-cache --output "type=image,push=false" --build-arg FROM_IMAGE="$base_image_digest" "${SCRIPT_DIR}"/ | cat
   fi
 
-  if ${RM_IMAGES}; then # save disk space by deleting the image we just published
-    echo "Deleting ${NAME_FORMAT}/${dev_container_name}:${TAG} from local registry"
-    docker rmi "${NAME_FORMAT}/${dev_container_name}:${TAG}"
-  fi
   BUILT_IMAGES="${BUILT_IMAGES}    ${NAME_FORMAT}/${dev_container_name}:${TAG}\n"
 done < "${SCRIPT_DIR}"/base_images
 

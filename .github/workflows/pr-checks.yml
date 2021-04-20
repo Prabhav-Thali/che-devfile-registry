@@ -48,7 +48,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
       - 
         name: Build dev container images
-        run: ./arbitrary-users-patch/build_images.sh --rm
+        run: ./arbitrary-users-patch/build_images.sh
 
   build-main-image:
 
