@@ -8,9 +8,10 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
+echo $0
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 #LOG_FILE="/tmp/image_digests.log"
-ARCH=$1
+ARCH=$2
 pip install yq
 
 function handle_error() {
