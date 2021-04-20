@@ -29,7 +29,10 @@ do
         if [[ $(skopeo inspect docker://"${image}" --raw | grep manifests) ]]; then
             base_image_platforms_list=$(skopeo inspect docker://"${image}" --raw | jq -r '.manifests[].platform.architecture')
             echo $base_image_platforms_list
+
+            echo "ARCH: $ARCH"
             while IFS= read -r line ; do 
+                echo "line: $line"
                 if [[ $ARCH == $line ]]; then 
                     supported=true
                     break
