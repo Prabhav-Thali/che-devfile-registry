@@ -58,7 +58,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Exclude Devfiles
-        if: ${{ matrix.arch != "amd64" }}
+        if: ${{ matrix.arch != 'amd64' }}
         run: ./build/scripts/exclude_devfiles.sh devfiles ${{ matrix.arch }}
       -
         name: "Build and push ${{ matrix.arch }}"
