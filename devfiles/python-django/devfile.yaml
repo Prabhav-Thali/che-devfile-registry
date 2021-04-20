@@ -14,7 +14,7 @@ components:
   -
     type: dockerimage
     alias: python
-    image: quay.io/eclipse/che-python-3.8:nightly
+    image: quay.io/prabhav/che-python-3.8:nightly
     memoryLimit: 512Mi
     endpoints:
       - name: 'django'

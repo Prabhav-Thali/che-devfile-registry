@@ -21,33 +21,43 @@ function handle_error() {
   sed 's|^|    |g' $LOG_FILE
 }
 
-supported=false
 
 for dir in devfiles/*/     # list directories in the form "/tmp/dirname/"
 do
+    supported=false
     dir=${dir%*/}      # remove the trailing "/"
     for image in $(yq -r '.components[]?.image' "$dir/devfile.yaml" | grep -v "null" | sort | uniq); do
+        echo "dir: $dir"
+        echo "image: $image"
         if [[ $(skopeo inspect docker://"${image}" --raw | grep manifests) ]]; then
-            base_image_platforms_list=$(skopeo inspect docker://"${image}" --raw | jq -r '.manifests[].platform.architecture')
+            base_image_platforms_list=$(skopeo inspect docker://"${image}" --raw | jq -r '.manifests[].platform.architecture')    
             echo $base_image_platforms_list
-
             echo "ARCH: $ARCH"
             while IFS= read -r line ; do 
                 echo "line: $line"
-                if [[ $ARCH == $line ]]; then 
+                if [[ $ARCH == $line ]]; then
                     supported=true
                     break
                 fi 
-            done <<< "$base_image_platforms_list"  
-        else 
+            done <<< "$base_image_platforms_list"
+            echo "Supported in IF: $supported"
+            if [[ !$supported ]]; then
+                break
+            fi
+        else
+            echo "In else, setting supported false"
             supported=false
-        fi
-
-        if [[ !supported ]]; then
-            echo "directories deleted is: ${dir}"
-            rm -rf devfiles/"${dir}"
+            break
         fi
     done
+    
+    if [[ !$supported ]]; then
+        echo "directories deleted is: ${dir}"
+        #rm -rf devfiles/"${dir}"
+    else
+        echo "directory will be added ${dir}"
+    fi
+    
 done
 #readarray -d '' devfiles < <(find "$1" -name 'devfile.yaml' -print0)
 
