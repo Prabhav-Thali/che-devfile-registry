@@ -56,7 +56,7 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Build and push base images
+      - name: Exclude Devfiles
         run: ./build/scripts/exclude_devfiles.sh devfiles ${{ matrix.arch }}
       -
         name: "Build and push ${{ matrix.arch }}"
