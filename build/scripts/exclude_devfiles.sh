@@ -8,9 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-echo $0
-SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
-#LOG_FILE="/tmp/image_digests.log"
+DEVFILES_DIR=$1
 ARCH=$2
 pip install yq
 
@@ -21,10 +19,9 @@ function handle_error() {
   sed 's|^|    |g' $LOG_FILE
 }
 
-
 for dir in devfiles/*/     # list directories in the form "/tmp/dirname/"
 do
-    supported=false
+    supported="false"
     dir=${dir%*/}      # remove the trailing "/"
     echo "dir: $dir"
     for image in $(yq -r '.components[]?.image' "$dir/devfile.yaml" | grep -v "null" | sort | uniq); do
@@ -33,14 +30,20 @@ do
             base_image_platforms_list=$(skopeo inspect docker://"${image}" --raw | jq -r '.manifests[].platform.architecture')    
             echo $base_image_platforms_list
             echo "ARCH: $ARCH"
+            #First image has support, it is made false to check for 2nd image. (can be set as default value again here)
+            if [[ $supported == "true" ]]; then 
+                supported=false
+            fi
             while IFS= read -r line ; do 
                 echo "line: $line"
-                if [[ $ARCH == $line ]]; then
+                #If supported platforms contain Arch then make supported true and break from while
+                if [[ $ARCH == $line ]]; then 
                     supported=true
                     break
-                fi 
+                fi
             done <<< "$base_image_platforms_list"
             echo "Supported in IF: $supported"
+            #if the platform is not supported then break
             if [[ "$supported" == "false" ]]; then
                 break
             fi
@@ -53,10 +56,9 @@ do
     echo "supported in outer else $supported"
     if [[ "$supported" == "false" ]]; then
         echo "directories deleted is: ${dir}"
-        #rm -rf devfiles/"${dir}"
+        rm -rf devfiles/"${dir}"
     else
         echo "directory will be added ${dir}"
     fi
     
 done
-#readarray -d '' devfiles < <(find "$1" -name 'devfile.yaml' -print0)
