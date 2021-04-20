@@ -57,7 +57,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Build and push base images
-        run: ./build/exclude_devfiles.sh devfiles ${{ matrix.arch }}
+        run: ./build/scripts/exclude_devfiles.sh devfiles ${{ matrix.arch }}
       -
         name: "Build and push ${{ matrix.arch }}"
         uses: docker/build-push-action@v2
