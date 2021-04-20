@@ -11,7 +11,7 @@
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 #LOG_FILE="/tmp/image_digests.log"
 ARCH=$1
-sudo apt install jq
+pip install yq
 
 function handle_error() {
   the_image="$1"
