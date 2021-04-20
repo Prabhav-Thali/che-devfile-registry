@@ -40,6 +40,7 @@ do
         fi
 
         if [[ !supported ]]; then
+            echo "directories deleted is: ${dir}"
             rm -rf devfiles/"${dir}"
         fi
     done
