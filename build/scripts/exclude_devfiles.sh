@@ -8,8 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-DEVFILES_DIR=$1
-ARCH=$2
+ARCH=$1
 pip install yq
 
 for dir in devfiles/*/
@@ -18,20 +17,20 @@ do
     dir=${dir%*/}
     for image in $(yq -r '.components[]?.image' "$dir/devfile.yaml" | grep -v "null" | sort | uniq); do
         if [[ $(skopeo inspect docker://"${image}" --raw | grep manifests) ]]; then
-            base_image_platforms_list=$(skopeo inspect docker://"${image}" --raw | jq -r '.manifests[].platform.architecture')
-            #First image has support, it is made false to check for 2nd image. (can be set as default value again here)
-            if [[ "$supported" == "true" ]]; then 
-                supported=false
-            fi
-            while IFS= read -r line ; do 
-                #If supported platforms contain Arch then make supported true and break from while
-                if [[ $ARCH == $line ]]; then 
+            image_platforms_list=$(skopeo inspect docker://"${image}" --raw | jq -r '.manifests[].platform.architecture')
+            
+            #supported variable is set to false to handle multiple images in devfile.yaml such that every image's support is verified.
+            supported=false
+
+            while IFS= read -r image_arch ; do 
+                #If image_platforms_list contains the arch on which the image is built, set supported=true
+                if [[ $ARCH == $image_arch ]]; then 
                     supported=true
                     break
                 fi
-            done <<< "$base_image_platforms_list"
+            done <<< "$image_platforms_list"
 
-            #if the platform is not supported then break
+            #If the arch is not present in image_platforms_list, stop verification.
             if [[ "$supported" == "false" ]]; then
                 break
             fi
@@ -41,8 +40,9 @@ do
         fi
     done
 
+    #If image is not supported, delete the directory of current devfile
     if [[ "$supported" == "false" ]]; then
-        rm -rf devfiles/"${dir}"
+        rm -rf "${dir}"
     else
         echo "Directory ${dir} will be added in the image"
     fi

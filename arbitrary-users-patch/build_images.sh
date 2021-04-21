@@ -38,26 +38,26 @@ while read -r line; do
   base_image_name=$(echo "$line" | tr -s ' ' | cut -f 2 -d ' ')
   base_image_digest=$(echo "$line" | tr -s ' ' | cut -f 3 -d ' ')
 
-  supported_platforms=(" amd64 arm64 s390x ppc64le ")
+  platforms=(" amd64 arm64 s390x ppc64le ")
 
   if [[ $(skopeo inspect docker://"${base_image_digest}" --raw | grep manifests) ]]; then
-    platforms_supported=""
-    base_image_platforms_list=$(skopeo inspect docker://"${base_image_digest}" --raw | jq -r '.manifests[].platform.architecture')
-    while IFS= read -r platform ; do 
-        if [[ "${supported_platforms[@]}" =~ " $platform " ]]; then 
-            platforms_supported+=linux/$platform, 
-        fi 
+    supported_platforms="" #Archs from platforms list on which base image is supported.
+    base_image_platforms_list=$(skopeo inspect docker://"${base_image_digest}" --raw | jq -r '.manifests[].platform.architecture') #get list of supported archs
+    while IFS= read -r platform ; do
+        if [[ "${platforms[@]}" =~ " $platform " ]]; then
+            supported_platforms+=linux/$platform,
+        fi
     done <<< "$base_image_platforms_list"
-    platforms_supported=$(echo "$platforms_supported" | sed 's/\(.*\),/\1/')
-  else 
-    platforms_supported=linux/amd64
+    supported_platforms=$(echo "$supported_platforms" | sed 's/\(.*\),/\1/')
+  else
+    supported_platforms=linux/amd64
   fi
 
   echo "Building ${NAME_FORMAT}/${dev_container_name}:${TAG} based on $base_image_name ..."
   if ${PUSH_IMAGES}; then
-    docker buildx build --platform "${platforms_supported}" -t "${NAME_FORMAT}/${dev_container_name}:${TAG}" --no-cache --push --build-arg FROM_IMAGE="$base_image_digest" "${SCRIPT_DIR}"/ | cat
-  else 
-    docker buildx build --platform "${platforms_supported}" -t "${NAME_FORMAT}/${dev_container_name}:${TAG}" --no-cache --output "type=image,push=false" --build-arg FROM_IMAGE="$base_image_digest" "${SCRIPT_DIR}"/ | cat
+    docker buildx build --platform "${supported_platforms}" -t "${NAME_FORMAT}/${dev_container_name}:${TAG}" --no-cache --push --build-arg FROM_IMAGE="$base_image_digest" "${SCRIPT_DIR}"/ | cat
+  else
+    docker buildx build --platform "${supported_platforms}" -t "${NAME_FORMAT}/${dev_container_name}:${TAG}" --no-cache --output "type=image,push=false" --build-arg FROM_IMAGE="$base_image_digest" "${SCRIPT_DIR}"/ | cat
   fi
 
   BUILT_IMAGES="${BUILT_IMAGES}    ${NAME_FORMAT}/${dev_container_name}:${TAG}\n"
