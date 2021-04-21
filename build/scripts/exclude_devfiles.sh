@@ -42,6 +42,7 @@ do
 
     #If image is not supported, delete the directory of current devfile
     if [[ "$supported" == "false" ]]; then
+        echo "Directory ${dir} will be removed from the image"
         rm -rf "${dir}"
     else
         echo "Directory ${dir} will be added in the image"

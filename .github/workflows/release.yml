@@ -83,7 +83,7 @@ jobs:
       - 
         name: Exclude Devfiles
         if: ${{ matrix.arch != 'amd64' }}
-        run: ./build/scripts/exclude_devfiles.sh devfiles ${{ matrix.arch }}
+        run: ./build/scripts/exclude_devfiles.sh ${{ matrix.arch }}
       -
         name: "Build and push ${{ matrix.arch }}"
         uses: docker/build-push-action@v2
