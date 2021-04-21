@@ -46,6 +46,7 @@ while read -r line; do
         do
           if [[ " $arch " == " $platform " ]]; then
             supported_platforms+=,linux/$platform
+            break
           fi
         done
       fi
