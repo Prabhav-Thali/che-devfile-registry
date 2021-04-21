@@ -27,11 +27,6 @@ if [ "$1" == "--push" ] || [ "$2" == "--push" ]; then
   PUSH_IMAGES=true
 fi
 
-RM_IMAGES=false
-if [ "$1" == "--rm" ] || [ "$2" == "--rm" ]; then
-  RM_IMAGES=true
-fi
-
 BUILT_IMAGES=""
 while read -r line; do
   dev_container_name=$(echo "$line" | tr -s ' ' | cut -f 1 -d ' ')
