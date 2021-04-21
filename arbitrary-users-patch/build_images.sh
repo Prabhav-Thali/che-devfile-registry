@@ -27,31 +27,34 @@ if [ "$1" == "--push" ] || [ "$2" == "--push" ]; then
   PUSH_IMAGES=true
 fi
 
-RM_IMAGES=false
-if [ "$1" == "--rm" ] || [ "$2" == "--rm" ]; then
-  RM_IMAGES=true
-fi
-
 BUILT_IMAGES=""
 while read -r line; do
   dev_container_name=$(echo "$line" | tr -s ' ' | cut -f 1 -d ' ')
   base_image_name=$(echo "$line" | tr -s ' ' | cut -f 2 -d ' ')
   base_image_digest=$(echo "$line" | tr -s ' ' | cut -f 3 -d ' ')
-  platforms_supported=$(echo "$line" | tr -s ' ' | cut -f 4 -d ' ')
+
+  platforms=(" amd64 arm64 s390x ppc64le ")
+
+  if [[ $(skopeo inspect docker://"${base_image_digest}" --raw | grep manifests) ]]; then
+    supported_platforms="" #Archs from platforms list on which base image is supported.
+    base_image_platforms_list=$(skopeo inspect docker://"${base_image_digest}" --raw | jq -r '.manifests[].platform.architecture') #get list of supported archs
+    while IFS= read -r platform ; do
+        if [[ "${platforms[@]}" =~ " $platform " ]]; then
+            supported_platforms+=linux/$platform,
+        fi
+    done <<< "$base_image_platforms_list"
+    supported_platforms=$(echo "$supported_platforms" | sed 's/\(.*\),/\1/')
+  else
+    supported_platforms=linux/amd64
+  fi
+
   echo "Building ${NAME_FORMAT}/${dev_container_name}:${TAG} based on $base_image_name ..."
   if ${PUSH_IMAGES}; then
-    docker buildx build --platform ${platforms_supported} -t "${NAME_FORMAT}/${dev_container_name}:${TAG}" --no-cache --push --build-arg FROM_IMAGE="$base_image_digest" "${SCRIPT_DIR}"/ | cat
-  else 
-    docker buildx build --platform ${platforms_supported} -t "${NAME_FORMAT}/${dev_container_name}:${TAG}" --no-cache --build-arg FROM_IMAGE="$base_image_digest" "${SCRIPT_DIR}"/ | cat
+    docker buildx build --platform "${supported_platforms}" -t "${NAME_FORMAT}/${dev_container_name}:${TAG}" --no-cache --push --build-arg FROM_IMAGE="$base_image_digest" "${SCRIPT_DIR}"/ | cat
+  else
+    docker buildx build --platform "${supported_platforms}" -t "${NAME_FORMAT}/${dev_container_name}:${TAG}" --no-cache --output "type=image,push=false" --build-arg FROM_IMAGE="$base_image_digest" "${SCRIPT_DIR}"/ | cat
   fi
-  #if ${PUSH_IMAGES}; then
-    #echo "Pushing ${NAME_FORMAT}/${dev_container_name}:${TAG} to remote registry"
-    #docker push "${NAME_FORMAT}/${dev_container_name}:${TAG}" | cat
-  #fi
-  #if ${RM_IMAGES}; then # save disk space by deleting the image we just published
-    #echo "Deleting ${NAME_FORMAT}/${dev_container_name}:${TAG} from local registry"
-    #docker rmi "${NAME_FORMAT}/${dev_container_name}:${TAG}"
-  #fi
+
   BUILT_IMAGES="${BUILT_IMAGES}    ${NAME_FORMAT}/${dev_container_name}:${TAG}\n"
 done < "${SCRIPT_DIR}"/base_images
 
