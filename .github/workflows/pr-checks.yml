@@ -12,7 +12,7 @@ name: PR Checks
 on:
   push:
     branches: 
-      - test
+      - master
 
 jobs:
   shellcheck:
