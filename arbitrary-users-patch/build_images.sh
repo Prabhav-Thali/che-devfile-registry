@@ -33,19 +33,23 @@ while read -r line; do
   base_image_name=$(echo "$line" | tr -s ' ' | cut -f 2 -d ' ')
   base_image_digest=$(echo "$line" | tr -s ' ' | cut -f 3 -d ' ')
 
-  platforms=(" amd64 arm64 s390x ppc64le ")
+  platforms=( amd64 arm64 s390x ppc64le )
+  supported_platforms=linux/amd64
 
-  if [[ $(skopeo inspect docker://"${base_image_digest}" --raw | grep manifests) ]]; then
-    supported_platforms="" #Archs from platforms list on which base image is supported.
+  if skopeo inspect docker://"${base_image_digest}" --raw | grep -q manifests
+  then
+    supported_platforms=linux/amd64 #Archs from platforms list on which base image is supported.
     base_image_platforms_list=$(skopeo inspect docker://"${base_image_digest}" --raw | jq -r '.manifests[].platform.architecture') #get list of supported archs
     while IFS= read -r platform ; do
-        if [[ "${platforms[@]}" =~ " $platform " ]]; then
-            supported_platforms+=linux/$platform,
-        fi
+      if [[ $platform != "amd64" ]]; then
+        for arch in "${platforms[@]}"
+        do
+          if [[ " $arch " == " $platform " ]]; then
+            supported_platforms+=,linux/$platform
+          fi
+        done
+      fi
     done <<< "$base_image_platforms_list"
-    supported_platforms=$(echo "$supported_platforms" | sed 's/\(.*\),/\1/')
-  else
-    supported_platforms=linux/amd64
   fi
 
   echo "Building ${NAME_FORMAT}/${dev_container_name}:${TAG} based on $base_image_name ..."

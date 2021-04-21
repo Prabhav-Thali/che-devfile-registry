@@ -16,7 +16,8 @@ do
     supported=false
     dir=${dir%*/}
     for image in $(yq -r '.components[]?.image' "$dir/devfile.yaml" | grep -v "null" | sort | uniq); do
-        if [[ $(skopeo inspect docker://"${image}" --raw | grep manifests) ]]; then
+        if skopeo inspect docker://"${image}" --raw | grep -q manifests
+         then
             image_platforms_list=$(skopeo inspect docker://"${image}" --raw | jq -r '.manifests[].platform.architecture')
             
             #supported variable is set to false to handle multiple images in devfile.yaml such that every image's support is verified.
@@ -24,7 +25,7 @@ do
 
             while IFS= read -r image_arch ; do 
                 #If image_platforms_list contains the arch on which the image is built, set supported=true
-                if [[ $ARCH == $image_arch ]]; then 
+                if [[ $ARCH == "$image_arch" ]]; then 
                     supported=true
                     break
                 fi
@@ -42,7 +43,6 @@ do
 
     #If image is not supported, delete the directory of current devfile
     if [[ "$supported" == "false" ]]; then
-        echo "Directory ${dir} will be removed from the image"
         rm -rf "${dir}"
     else
         echo "Directory ${dir} will be added in the image"
