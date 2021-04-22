@@ -22,8 +22,7 @@ on:
 
 env:
   IMAGE: quay.io/prabhav/che-devfile-registry
-  VERSION: ${{ github.event.inputs.version }}
-  TAG: ${{ env.VERSION }}
+  TAG: ${{ github.event.inputs.version }}
 
 jobs:
   build-images:
