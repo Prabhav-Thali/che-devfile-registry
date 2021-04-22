@@ -26,7 +26,6 @@ env:
 
 jobs:
   build-images:
-    needs: nightly-build-publish
     runs-on: ubuntu-20.04
     steps:
       - 
