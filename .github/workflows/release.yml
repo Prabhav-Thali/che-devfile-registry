@@ -29,7 +29,7 @@ jobs:
     needs: nightly-build-publish
     runs-on: ubuntu-20.04
     env:
-      TAG: $(head -n 1 ${{ env.VERSION }})
+      TAG: ${{ env.VERSION }}
     steps:
       - 
         name: "Checkout  source code"
