@@ -23,12 +23,13 @@ on:
 env:
   IMAGE: quay.io/prabhav/che-devfile-registry
   VERSION: ${{ github.event.inputs.version }}
-  TAG: $(head -n 1 ${{ env.VERSION }})
 
 jobs:
   build-images:
     needs: nightly-build-publish
     runs-on: ubuntu-20.04
+    env:
+      TAG: $(head -n 1 ${{ env.VERSION }})
     steps:
       - 
         name: "Checkout  source code"
