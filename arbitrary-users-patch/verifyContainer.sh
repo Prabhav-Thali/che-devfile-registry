@@ -51,7 +51,7 @@ verifyContainerExists()
     fi
 }
 
-  IMAGE_QUAY_PREFIX="quay.io/eclipse"
+  IMAGE_QUAY_PREFIX="quay.io/prabhav"
   while read -r line; do
     IMAGE_NAME=$(echo "$line" | tr -s ' ' | cut -f 1 -d ' ')
     # echo "Checking ${IMAGE_QUAY_PREFIX}/${IMAGE_NAME}:${TAG} ..."
