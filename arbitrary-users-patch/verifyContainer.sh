@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Used to add extra check to verify that sidecar images are released before devfile registry release
 
 SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
 
